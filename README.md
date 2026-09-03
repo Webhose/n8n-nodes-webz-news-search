@@ -1,4 +1,4 @@
-# @webz.io/n8n-nodes-news-search
+# n8n-nodes-webz-news-search
 
 **Search global news with [Webz.io](https://webz.io) from n8n - standalone workflows, structured output, and AI agent tools.**
 
@@ -17,7 +17,7 @@ This community node talks to the hosted Webz.io News Search MCP server at `https
 In n8n, open **Settings → Community nodes → Install**, then enter:
 
 ```
-@webz.io/n8n-nodes-news-search
+n8n-nodes-webz-news-search
 ```
 
 Or install locally while developing:

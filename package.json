@@ -1,5 +1,5 @@
 {
-  "name": "@webz.io/n8n-nodes-news-search",
+  "name": "n8n-nodes-webz-news-search",
   "version": "0.1.0",
   "description": "n8n community node for Webz.io News Search via the hosted MCP server",
   "keywords": [

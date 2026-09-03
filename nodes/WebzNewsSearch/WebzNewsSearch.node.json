@@ -1,5 +1,5 @@
 {
-  "node": "@webz.io/n8n-nodes-news-search.webzNewsSearch",
+  "node": "n8n-nodes-webz-news-search.webzNewsSearch",
   "nodeVersion": "1.0",
   "codexVersion": "1.0",
   "categories": ["Productivity", "Miscellaneous", "Utility"],
