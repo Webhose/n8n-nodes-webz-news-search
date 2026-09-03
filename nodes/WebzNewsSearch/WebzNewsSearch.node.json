@@ -1,0 +1,28 @@
+{
+  "node": "@webz.io/n8n-nodes-news-search.webzNewsSearch",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Productivity", "Miscellaneous", "Utility"],
+  "resources": {
+    "credentialDocumentation": [
+      {
+        "url": "https://docs.webz.io/docs/webz/news-search-api-mcp"
+      }
+    ],
+    "primaryDocumentation": [
+      {
+        "url": "https://docs.webz.io/docs/webz/news-search-api-mcp"
+      }
+    ]
+  },
+  "alias": [
+    "webz",
+    "webz.io",
+    "news",
+    "news search",
+    "mcp",
+    "search",
+    "articles",
+    "media monitoring"
+  ]
+}

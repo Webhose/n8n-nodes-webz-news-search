@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Webz.io News Search">
+  <rect width="64" height="64" rx="12" fill="#1A1A1A"/>
+  <path fill="#FFFFFF" d="M14 42V22h6.2l7.4 12.1L35 22h6.2v20H35V33.3L27.6 45h-1.2L19 33.3V42H14zm29.8 0V22H50v20h-6.2z"/>
+  <circle cx="47" cy="47" r="8" fill="#FFB703"/>
+  <path fill="#1A1A1A" d="M44.5 47a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm6.8 0a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0z"/>
+</svg>

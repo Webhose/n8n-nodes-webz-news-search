@@ -1,0 +1,68 @@
+{
+  "name": "@webz.io/n8n-nodes-news-search",
+  "version": "0.1.0",
+  "description": "n8n community node for Webz.io News Search via the hosted MCP server",
+  "keywords": [
+    "webz",
+    "webz.io",
+    "news",
+    "search",
+    "mcp",
+    "n8n-community-node-package"
+  ],
+  "license": "MIT",
+  "homepage": "https://news-search-mcp.webz.io",
+  "author": {
+    "name": "Webz.io",
+    "email": "support@webz.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Webhose/webz-news-search.git",
+    "directory": "packages/n8n-node"
+  },
+  "bugs": {
+    "url": "https://github.com/Webhose/webz-news-search/issues"
+  },
+  "engines": {
+    "node": ">=18.10"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier credentials nodes --write",
+    "lint": "eslint credentials nodes package.json",
+    "lintfix": "eslint credentials nodes package.json --fix",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build && npm run lint && npm test"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/WebzNewsSearchApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/WebzNewsSearch/WebzNewsSearch.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "@typescript-eslint/parser": "^8.52.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-n8n-nodes-base": "^1.16.4",
+    "globals": "^16.5.0",
+    "gulp": "^5.0.1",
+    "jsonc-eslint-parser": "^2.4.2",
+    "n8n-workflow": "^2.0.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "n8n-workflow": ">= 2 < 3"
+  }
+}
