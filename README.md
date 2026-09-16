@@ -88,6 +88,36 @@ New filters added on the server can be passed through **Additional Filters → A
 | API token | n8n credential | required |
 | MCP URL | hidden credential field | `https://news-search-mcp.webz.io/mcp` |
 
+## Publishing and verification
+
+n8n requires verified community nodes to be published from GitHub Actions with an npm provenance statement. This package uses [.github/workflows/publish-n8n-node.yml](../../.github/workflows/publish-n8n-node.yml) with npm Trusted Publishers (no long-lived token).
+
+### One-time npm setup
+
+On [npmjs.com/package/n8n-nodes-webz-news-search](https://www.npmjs.com/package/n8n-nodes-webz-news-search) → **Settings** → **Publish access** → **Trusted Publishers** → **Add a publisher**:
+
+| Field | Value |
+| --- | --- |
+| Repository owner | `Webhose` |
+| Repository name | `webz-news-search` |
+| Workflow name | `publish-n8n-node.yml` |
+
+Use the workflow **filename**, not the workflow display name.
+
+### Publish a new version
+
+After the Trusted Publisher is configured, dispatch the workflow from the repo **Actions** tab or run:
+
+```bash
+gh workflow run publish-n8n-node.yml
+```
+
+The workflow bumps the patch version, runs build/lint/tests, publishes with provenance, commits the version bump, and creates a GitHub release.
+
+### Submit for verification
+
+When `@n8n/scan-community-package n8n-nodes-webz-news-search` passes, submit the package in the [n8n Creator Portal](https://creators.n8n.io/) for verification.
+
 ## Development
 
 ```bash
