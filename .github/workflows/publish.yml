@@ -1,0 +1,56 @@
+# Publishes n8n-nodes-webz-news-search to npm with provenance.
+#
+# This workflow runs in the dedicated mirror repo
+# (Webhose/n8n-nodes-webz-news-search), where the package sits at the
+# repository root. Development happens in the Webhose/webz-news-search
+# monorepo under packages/n8n-node; releases are synced here with
+# `git subtree split` (see README, "Publishing and verification").
+#
+# In the monorepo this file is inert: workflows only run from the
+# repository-root .github directory.
+#
+# npm auth uses Trusted Publishers (OIDC), stage-only: this workflow
+# stages the release, and a maintainer approves it on npmjs.com with 2FA.
+
+name: Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and test
+        run: npm run prepublishOnly
+
+      - name: Update npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Stage publish to npm
+        run: npm stage publish
+
+      - name: Read version
+        id: version
+        run: echo "version=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          generate_release_notes: true

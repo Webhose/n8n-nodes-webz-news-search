@@ -4,7 +4,7 @@
 
 This community node talks to the hosted Webz.io News Search MCP server at `https://news-search-mcp.webz.io/mcp`. It runs without an LLM in the loop, splits each article into its own item, and can also be attached to an AI Agent as a tool.
 
-Maintained by [Webz.io](https://webz.io) at [github.com/Webhose/webz-news-search](https://github.com/Webhose/webz-news-search).
+Maintained by [Webz.io](https://webz.io). Developed in the [webz-news-search monorepo](https://github.com/Webhose/webz-news-search) under `packages/n8n-node`, and mirrored to [Webhose/n8n-nodes-webz-news-search](https://github.com/Webhose/n8n-nodes-webz-news-search) for npm publishing and n8n verification.
 
 ## What you get
 
@@ -22,10 +22,9 @@ In n8n, open **Settings → Community nodes → Install**, then enter:
 n8n-nodes-webz-news-search
 ```
 
-Or install locally while developing:
+Or install locally while developing (from this package directory — `packages/n8n-node` in the monorepo, or the root of the mirror repo):
 
 ```bash
-cd packages/n8n-node
 npm install
 npm run build
 ```
@@ -33,7 +32,7 @@ npm run build
 Then point n8n at the built package:
 
 ```bash
-export N8N_CUSTOM_EXTENSIONS=/path/to/webz-news-search/packages/n8n-node/dist
+export N8N_CUSTOM_EXTENSIONS=/path/to/n8n-node-package/dist
 ```
 
 ## Credentials
@@ -90,7 +89,12 @@ New filters added on the server can be passed through **Additional Filters → A
 
 ## Publishing and verification
 
-n8n requires verified community nodes to be published from GitHub Actions with an npm provenance statement. This package uses [.github/workflows/publish-n8n-node.yml](../../.github/workflows/publish-n8n-node.yml) with npm Trusted Publishers (no long-lived token).
+n8n requires verified community nodes to be published from GitHub Actions with an npm provenance statement, and the Creator Portal pre-check looks for `credentials/` and `nodes/` at the **root** of the repository in `package.json → repository.url` (it does not resolve monorepo subdirectories). Releases therefore go through a dedicated mirror repo where the package sits at the root:
+
+- **Development:** [Webhose/webz-news-search](https://github.com/Webhose/webz-news-search) under `packages/n8n-node`
+- **Publishing and verification:** [Webhose/n8n-nodes-webz-news-search](https://github.com/Webhose/n8n-nodes-webz-news-search)
+
+The mirror carries its publish workflow from [`.github/workflows/publish.yml`](.github/workflows/publish.yml) inside this package directory — inert in the monorepo, active at the mirror's root.
 
 ### One-time npm setup
 
@@ -99,8 +103,8 @@ On [npmjs.com/package/n8n-nodes-webz-news-search](https://www.npmjs.com/package/
 | Field | Value |
 | --- | --- |
 | Repository owner | `Webhose` |
-| Repository name | `webz-news-search` |
-| Workflow filename | `publish-n8n-node.yml` |
+| Repository name | `n8n-nodes-webz-news-search` |
+| Workflow filename | `publish.yml` |
 | Environment name | leave blank |
 | Allowed actions | `npm stage publish` only |
 
@@ -108,17 +112,26 @@ Use the workflow **filename**, not the workflow display name. Stage-only publish
 
 ### Publish a new version
 
-After the Trusted Publisher is configured, dispatch the workflow from the repo **Actions** tab or run:
+1. Bump the version in `packages/n8n-node/package.json` and `package-lock.json` in the monorepo and merge to master.
+2. Sync the mirror from the monorepo root:
 
-```bash
-gh workflow run publish-n8n-node.yml
-```
+   ```bash
+   git subtree split --prefix=packages/n8n-node -b n8n-node-mirror
+   git push git@github.com:Webhose/n8n-nodes-webz-news-search.git n8n-node-mirror:main --force
+   git branch -D n8n-node-mirror
+   ```
 
-The workflow bumps the patch version, runs build/lint/tests, stages the package on npm with provenance, commits the version bump, and creates a GitHub release. Approve the staged version on [npmjs.com](https://www.npmjs.com/package/n8n-nodes-webz-news-search) with 2FA before it becomes installable.
+3. Dispatch the mirror's publish workflow:
+
+   ```bash
+   gh workflow run publish.yml -R Webhose/n8n-nodes-webz-news-search
+   ```
+
+4. Approve the staged version on [npmjs.com](https://www.npmjs.com/package/n8n-nodes-webz-news-search) with 2FA.
 
 ### Submit for verification
 
-When `@n8n/scan-community-package n8n-nodes-webz-news-search` passes, submit the package in the [n8n Creator Portal](https://creators.n8n.io/) for verification.
+When `npx @n8n/scan-community-package n8n-nodes-webz-news-search` passes, submit the package in the [n8n Creator Portal](https://creators.n8n.io/) for verification.
 
 ## Development
 
