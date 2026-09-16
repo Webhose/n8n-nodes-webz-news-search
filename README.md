@@ -4,6 +4,8 @@
 
 This community node talks to the hosted Webz.io News Search MCP server at `https://news-search-mcp.webz.io/mcp`. It runs without an LLM in the loop, splits each article into its own item, and can also be attached to an AI Agent as a tool.
 
+Maintained by [Webz.io](https://webz.io) at [github.com/Webhose/webz-news-search](https://github.com/Webhose/webz-news-search).
+
 ## What you get
 
 - Semantic news search in natural language
