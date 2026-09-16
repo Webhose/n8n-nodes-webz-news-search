@@ -102,9 +102,9 @@ On [npmjs.com/package/n8n-nodes-webz-news-search](https://www.npmjs.com/package/
 | Repository name | `webz-news-search` |
 | Workflow filename | `publish-n8n-node.yml` |
 | Environment name | leave blank |
-| Allowed actions | `npm publish` |
+| Allowed actions | `npm publish` (or `npm stage publish` if you prefer manual approval on npmjs.com) |
 
-Use the workflow **filename**, not the workflow display name. If publish fails with `OIDC permission denied for this action`, confirm **Allowed actions** includes `npm publish` and that **Environment name** is blank unless the workflow sets one.
+Use the workflow **filename**, not the workflow display name. If publish fails with `OIDC permission denied for this action`, confirm **Allowed actions** matches the command the workflow runs (`npm publish` vs `npm stage publish`) and that **Environment name** is blank unless the workflow sets one.
 
 ### Publish a new version
 
@@ -114,9 +114,7 @@ After the Trusted Publisher is configured, dispatch the workflow from the repo *
 gh workflow run publish-n8n-node.yml
 ```
 
-The workflow bumps the patch version, runs build/lint/tests, stages the package on npm with provenance, commits the version bump, and creates a GitHub release.
-
-If your Trusted Publisher allows only `npm stage publish`, approve the staged version on [npmjs.com](https://www.npmjs.com/package/n8n-nodes-webz-news-search) with 2FA before it becomes installable.
+The workflow bumps the patch version, runs build/lint/tests, publishes to npm with provenance, commits the version bump, and creates a GitHub release.
 
 ### Submit for verification
 
