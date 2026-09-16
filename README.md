@@ -117,7 +117,7 @@ Use the workflow **filename**, not the workflow display name. Stage-only publish
 
    ```bash
    git subtree split --prefix=packages/n8n-node -b n8n-node-mirror
-   git push git@github.com:Webhose/n8n-nodes-webz-news-search.git n8n-node-mirror:main --force
+   git push git@github.com:Webhose/n8n-nodes-webz-news-search.git n8n-node-mirror:master --force
    git branch -D n8n-node-mirror
    ```
 
