@@ -100,9 +100,11 @@ On [npmjs.com/package/n8n-nodes-webz-news-search](https://www.npmjs.com/package/
 | --- | --- |
 | Repository owner | `Webhose` |
 | Repository name | `webz-news-search` |
-| Workflow name | `publish-n8n-node.yml` |
+| Workflow filename | `publish-n8n-node.yml` |
+| Environment name | leave blank |
+| Allowed actions | `npm publish` |
 
-Use the workflow **filename**, not the workflow display name.
+Use the workflow **filename**, not the workflow display name. If publish fails with `OIDC permission denied for this action`, confirm **Allowed actions** includes `npm publish` and that **Environment name** is blank unless the workflow sets one.
 
 ### Publish a new version
 
