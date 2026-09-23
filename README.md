@@ -4,7 +4,7 @@
 
 This community node talks to the hosted Webz.io News Search MCP server at `https://news-search-mcp.webz.io/mcp`. It runs without an LLM in the loop, splits each article into its own item, and can also be attached to an AI Agent as a tool.
 
-Maintained by [Webz.io](https://webz.io). Developed in the [webz-news-search monorepo](https://github.com/Webhose/webz-news-search) under `packages/n8n-node`, and mirrored to [Webhose/n8n-nodes-webz-news-search](https://github.com/Webhose/n8n-nodes-webz-news-search) for npm publishing and n8n verification.
+Maintained by [Webz.io](https://webz.io).
 
 ## What you get
 
@@ -22,7 +22,7 @@ In n8n, open **Settings → Community nodes → Install**, then enter:
 n8n-nodes-webz-news-search
 ```
 
-Or install locally while developing (from this package directory — `packages/n8n-node` in the monorepo, or the root of the mirror repo):
+Or install locally while developing:
 
 ```bash
 npm install
@@ -32,7 +32,7 @@ npm run build
 Then point n8n at the built package:
 
 ```bash
-export N8N_CUSTOM_EXTENSIONS=/path/to/n8n-node-package/dist
+export N8N_CUSTOM_EXTENSIONS=/path/to/n8n-nodes-webz-news-search/dist
 ```
 
 ## Credentials
@@ -72,7 +72,7 @@ N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
 
 Then connect **Webz.io News Search** to an **AI Agent** node's tool input the same way you would connect Brave Search or another community tool node.
 
-For agent-first workflows without structured output, the built-in **MCP Client Tool** node in [`../../n8n/README.md`](../../n8n/README.md) is still a good fit.
+For agent-first workflows without structured output, the built-in **MCP Client Tool** node is still a good fit. See the [n8n integration guide in webz-news-search](https://github.com/Webhose/webz-news-search/blob/master/n8n/README.md).
 
 ## How it works
 
@@ -89,12 +89,9 @@ New filters added on the server can be passed through **Additional Filters → A
 
 ## Publishing and verification
 
-n8n requires verified community nodes to be published from GitHub Actions with an npm provenance statement, and the Creator Portal pre-check looks for `credentials/` and `nodes/` at the **root** of the repository in `package.json → repository.url` (it does not resolve monorepo subdirectories). Releases therefore go through a dedicated mirror repo where the package sits at the root:
+n8n requires verified community nodes to be published from GitHub Actions with an npm provenance statement. This repository is the source of truth for the package.
 
-- **Development:** [Webhose/webz-news-search](https://github.com/Webhose/webz-news-search) under `packages/n8n-node`
-- **Publishing and verification:** [Webhose/n8n-nodes-webz-news-search](https://github.com/Webhose/n8n-nodes-webz-news-search)
-
-The mirror carries its publish workflow from [`.github/workflows/publish.yml`](.github/workflows/publish.yml) inside this package directory — inert in the monorepo, active at the mirror's root.
+Publish workflow: [`.github/workflows/publish.yml`](.github/workflows/publish.yml)
 
 ### One-time npm setup
 
@@ -112,22 +109,14 @@ Use the workflow **filename**, not the workflow display name. Stage-only publish
 
 ### Publish a new version
 
-1. Bump the version in `packages/n8n-node/package.json` and `package-lock.json` in the monorepo and merge to master.
-2. Sync the mirror from the monorepo root:
-
-   ```bash
-   git subtree split --prefix=packages/n8n-node -b n8n-node-mirror
-   git push git@github.com:Webhose/n8n-nodes-webz-news-search.git n8n-node-mirror:master --force
-   git branch -D n8n-node-mirror
-   ```
-
-3. Dispatch the mirror's publish workflow:
+1. Bump the version in `package.json` and `package-lock.json` and merge to master.
+2. Dispatch the publish workflow:
 
    ```bash
    gh workflow run publish.yml -R Webhose/n8n-nodes-webz-news-search
    ```
 
-4. Approve the staged version on [npmjs.com](https://www.npmjs.com/package/n8n-nodes-webz-news-search) with 2FA.
+3. Approve the staged version on [npmjs.com](https://www.npmjs.com/package/n8n-nodes-webz-news-search) with 2FA.
 
 ### Submit for verification
 
@@ -156,4 +145,5 @@ npm test
 - [MCP server landing page](https://news-search-mcp.webz.io)
 - [News Search API filters](https://docs.webz.io/docs/webz/news-search-api-filters)
 - [n8n community node docs](https://docs.n8n.io/integrations/community-nodes/)
-- [GitHub](https://github.com/Webhose/webz-news-search)
+- [n8n workflow templates (MCP Client Tool)](https://github.com/Webhose/webz-news-search/tree/master/n8n)
+- [GitHub](https://github.com/Webhose/n8n-nodes-webz-news-search)
