@@ -9,7 +9,7 @@ import { DEFAULT_MCP_URL, MCP_PROTOCOL_VERSION, PACKAGE_NAME, PACKAGE_VERSION } 
 
 export class WebzNewsSearchApi implements ICredentialType {
 	name = 'webzNewsSearchApi';
-	icon = 'file:../nodes/WebzNewsSearch/webzNewsSearch.svg' as const;
+	icon = 'file:../nodes/WebzNewsSearch/webzNewsSearch.png' as const;
 	displayName = 'Webz.io News Search API';
 	documentationUrl = 'https://docs.webz.io/docs/webz/news-search-api-mcp';
 
