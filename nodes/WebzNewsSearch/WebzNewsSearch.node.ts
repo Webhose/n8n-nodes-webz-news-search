@@ -21,8 +21,8 @@ export class WebzNewsSearch implements INodeType {
 		name: 'webzNewsSearch',
 		subtitle: '={{$parameter["operation"]}}',
 		icon: {
-			light: 'file:webzNewsSearch.png',
-			dark: 'file:webzNewsSearch.dark.png',
+			light: 'file:webzNewsSearch.svg',
+			dark: 'file:webzNewsSearch.dark.svg',
 		},
 		group: ['transform'],
 		version: 1,
