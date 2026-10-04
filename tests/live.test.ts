@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import type { IExecuteFunctions, IHttpRequestOptions } from 'n8n-workflow';
 
-import { DEFAULT_MCP_URL, PREFERRED_TOOL_NAME } from '../nodes/WebzNewsSearch/constants';
-import { buildArguments } from '../nodes/WebzNewsSearch/buildArguments';
-import { callTool, closeSession, openSession } from '../nodes/WebzNewsSearch/mcp';
+import { searchNews } from '../nodes/WebzNewsSearch/api';
+import { buildRequestBody } from '../nodes/WebzNewsSearch/buildRequest';
+import { DEFAULT_API_URL } from '../nodes/WebzNewsSearch/constants';
+import { mapArticles } from '../nodes/WebzNewsSearch/mapResults';
 
 const token = process.env.WEBZ_API_TOKEN?.trim();
 
@@ -32,17 +33,11 @@ function createLiveContext(): IExecuteFunctions {
 				try {
 					body = JSON.parse(bodyText);
 				} catch {
-					// Keep raw text for SSE fallback tests.
+					// Keep the raw body when the response is not JSON.
 				}
-
-				const headers: Record<string, string> = {};
-				response.headers.forEach((value, key) => {
-					headers[key] = value;
-				});
 
 				return {
 					statusCode: response.status,
-					headers,
 					body,
 				};
 			},
@@ -50,27 +45,19 @@ function createLiveContext(): IExecuteFunctions {
 	} as unknown as IExecuteFunctions;
 }
 
-describe.skipIf(!token)('live MCP smoke', () => {
-	it('opens a session, searches news, and closes the session', async () => {
+describe.skipIf(!token)('live News Search API smoke', () => {
+	it('posts a search and maps articles', async () => {
 		const ctx = createLiveContext();
-		const sessionId = await openSession(ctx, DEFAULT_MCP_URL);
+		const body = buildRequestBody('Nvidia earnings analyst reaction', 2, {
+			days: 7,
+			language: ['english'],
+		});
+		const response = await searchNews(ctx, DEFAULT_API_URL, body);
+		const articles = mapArticles(response, 'Nvidia earnings analyst reaction');
 
-		try {
-			const text = await callTool(
-				ctx,
-				DEFAULT_MCP_URL,
-				sessionId,
-				PREFERRED_TOOL_NAME,
-				buildArguments('Nvidia earnings analyst reaction', 2, {
-					days: 7,
-					language: ['english'],
-				}),
-			);
-
-			expect(text).toContain('Query:');
-			expect(text.length).toBeGreaterThan(20);
-		} finally {
-			await closeSession(ctx, DEFAULT_MCP_URL, sessionId);
-		}
+		expect(Array.isArray(response.results)).toBe(true);
+		expect(articles.length).toBeGreaterThan(0);
+		expect(articles[0].title.length).toBeGreaterThan(0);
+		expect(articles[0].url).toMatch(/^https?:\/\//);
 	});
 });

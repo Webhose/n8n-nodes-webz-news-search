@@ -2,7 +2,7 @@
 
 **Search global news with [Webz.io](https://webz.io) from n8n - standalone workflows, structured output, and AI agent tools.**
 
-This community node talks to the hosted Webz.io News Search MCP server at `https://news-search-mcp.webz.io/mcp`. It runs without an LLM in the loop, splits each article into its own item, and can also be attached to an AI Agent as a tool.
+This community node calls the Webz.io News Search API at `POST https://api.webz.io/api/news/context`. It runs without an LLM in the loop, splits each article into its own item, and can also be attached to an AI Agent as a tool.
 
 Maintained by [Webz.io](https://webz.io).
 
@@ -11,7 +11,7 @@ Maintained by [Webz.io](https://webz.io).
 - Semantic news search in natural language
 - One output item per article with `title`, `url`, `published`, `score`, and `excerpt`
 - Optional filters for language, country, ticker, sentiment, category, and more
-- Live MCP tool schema on the server side, with a JSON escape hatch for new filters
+- A JSON escape hatch for API filters newer than this node
 - `usableAsTool: true` for AI Agent workflows on self-hosted n8n
 
 ## Install
@@ -37,7 +37,7 @@ export N8N_CUSTOM_EXTENSIONS=/path/to/n8n-nodes-webz-news-search/dist
 
 ## Credentials
 
-Create a **Webz.io News Search API** credential and paste your Webz.io API token from https://webz.io. The credential test calls MCP `initialize` only, so it does not consume search credits.
+Create a **Webz.io News Search API** credential and paste your Webz.io API token from https://webz.io. The credential test runs one search (`k` of 1), so it uses one News Search credit.
 
 ## Direct search (no agent required)
 
@@ -60,7 +60,7 @@ Each simplified item looks like:
 }
 ```
 
-Turn **Simplify** off if you want the raw MCP text blob in a single `{ "result": "..." }` item.
+Turn **Simplify** off to get the API JSON body as a single item.
 
 ## With an AI Agent
 
@@ -76,16 +76,16 @@ For agent-first workflows without structured output, the built-in **MCP Client T
 
 ## How it works
 
-The node opens one MCP session per execution, calls `news_search_by_webz`, parses the formatted text response, and closes the session. It uses n8n's own HTTP helpers only, with zero runtime npm dependencies, so it can be submitted for n8n verification.
+Each input item is one `POST` to the News Search API. With **Simplify** on, each article in `results` becomes its own item. The node uses n8n's own HTTP helpers only, with zero runtime npm dependencies.
 
-New filters added on the server can be passed through **Additional Filters → Additional Fields (JSON)** without waiting for a node update.
+`days` is converted to `filters.published_from` before the request. New filters can be passed through **Additional Filters → Additional Fields (JSON)** without waiting for a node update.
 
 ## Configuration
 
 | Setting | Where | Default |
 | --- | --- | --- |
 | API token | n8n credential | required |
-| MCP URL | hidden credential field | `https://news-search-mcp.webz.io/mcp` |
+| API URL | hidden credential field | `https://api.webz.io/api/news/context` |
 
 ## Publishing and verification
 
@@ -141,8 +141,7 @@ npm test
 ## Links
 
 - [Webz.io](https://webz.io)
-- [News Search MCP documentation](https://docs.webz.io/docs/webz/news-search-api-mcp)
-- [MCP server landing page](https://news-search-mcp.webz.io)
+- [News Search API](https://docs.webz.io/docs/webz/news-search-api)
 - [News Search API filters](https://docs.webz.io/docs/webz/news-search-api-filters)
 - [n8n community node docs](https://docs.n8n.io/integrations/community-nodes/)
 - [n8n workflow templates (MCP Client Tool)](https://github.com/Webhose/webz-news-search/tree/master/n8n)

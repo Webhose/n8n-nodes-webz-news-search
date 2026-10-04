@@ -1,17 +1,18 @@
 {
   "name": "n8n-nodes-webz-news-search",
-  "version": "0.1.5",
-  "description": "n8n community node for Webz.io News Search via the hosted MCP server",
+  "version": "0.2.0",
+  "description": "n8n community node for the Webz.io News Search API",
   "keywords": [
     "webz",
     "webz.io",
     "news",
     "search",
-    "mcp",
+    "news search",
+    "api",
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "https://news-search-mcp.webz.io",
+  "homepage": "https://docs.webz.io/docs/webz/news-search-api",
   "author": {
     "name": "Webz.io",
     "email": "support@webz.io"
