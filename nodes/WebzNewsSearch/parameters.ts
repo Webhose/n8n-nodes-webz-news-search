@@ -4,7 +4,6 @@ import {
 	CATEGORY_OPTIONS,
 	POLITICAL_BIAS_OPTIONS,
 	SENTIMENT_OPTIONS,
-	SORT_BY_OPTIONS,
 	SOURCE_TYPE_OPTIONS,
 	TRUST_CATEGORY_OPTIONS,
 } from './data';
@@ -44,7 +43,7 @@ const optionalFilters: INodeProperties['options'] = [
 		type: 'number',
 		default: 0,
 		description:
-			'Lookback window in days. Leave at 0 to use the server default (last 7 days) unless Search All Dates is enabled.',
+			'Only articles published in the last N days. Leave at 0 to use the API default. Maximum coverage is 30 days.',
 		typeOptions: {
 			minValue: 0,
 		},
@@ -172,14 +171,6 @@ const optionalFilters: INodeProperties['options'] = [
 		},
 	},
 	{
-		displayName: 'Search All Dates',
-		name: 'allow_all_dates',
-		type: 'boolean',
-		default: false,
-		description:
-			'Whether to search the full indexed coverage window instead of the default lookback period',
-	},
-	{
 		displayName: 'Sentiment',
 		name: 'sentiment',
 		type: 'multiOptions',
@@ -188,18 +179,10 @@ const optionalFilters: INodeProperties['options'] = [
 		options: [...SENTIMENT_OPTIONS],
 	},
 	{
-		displayName: 'Sort By',
-		name: 'sort_by',
-		type: 'options',
-		default: 'best_score',
-		description: 'How to sort results',
-		options: [...SORT_BY_OPTIONS],
-	},
-	{
 		displayName: 'Source Type',
 		name: 'source_type',
-		type: 'multiOptions',
-		default: [],
+		type: 'options',
+		default: '',
 		description: 'Publisher source type from trust metadata',
 		options: [...SOURCE_TYPE_OPTIONS],
 	},
@@ -231,21 +214,10 @@ const optionalFilters: INodeProperties['options'] = [
 	{
 		displayName: 'Trust Category',
 		name: 'trust_category',
-		type: 'multiOptions',
-		default: [],
-		description: 'Trust category labels from source metadata',
+		type: 'options',
+		default: '',
+		description: 'Trust category label from source metadata',
 		options: [...TRUST_CATEGORY_OPTIONS],
-	},
-	{
-		displayName: 'Trust Greater Than or Equal',
-		name: 'trust_gte',
-		type: 'number',
-		default: 0,
-		description: 'Minimum trust score between 0.0 and 1.0',
-		typeOptions: {
-			minValue: 0,
-			maxValue: 1,
-		},
 	},
 	{
 		displayName: 'Additional Fields (JSON)',
@@ -253,7 +225,7 @@ const optionalFilters: INodeProperties['options'] = [
 		type: 'json',
 		default: {},
 		description:
-			'Extra MCP tool arguments merged last. Use this for new server-side filters without waiting for a node update.',
+			'Extra API fields merged last. Use this for filters newer than the node. Known top-level keys stay at the top level; other keys go into filters.',
 	},
 ];
 
@@ -298,7 +270,7 @@ export const PROPERTIES: INodeProperties[] = [
 		type: 'boolean',
 		default: true,
 		description:
-			'Whether to split the MCP text response into one item per article with title, URL, published date, score, and excerpt fields',
+			'Whether to return one item per article with title, URL, published date, score, and excerpt fields',
 	},
 	{
 		displayName: 'Additional Filters',

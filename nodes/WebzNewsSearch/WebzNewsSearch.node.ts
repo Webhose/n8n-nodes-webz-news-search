@@ -9,10 +9,10 @@ import {
 	type JsonObject,
 } from 'n8n-workflow';
 
-import { buildArguments } from './buildArguments';
-import { DEFAULT_MCP_URL, PREFERRED_TOOL_NAME, resolveMcpUrl } from './constants';
-import { callTool, closeSession, openSession } from './mcp';
-import { parseResults } from './parse';
+import { searchNews, WebzApiError } from './api';
+import { buildRequestBody } from './buildRequest';
+import { DEFAULT_API_URL, resolveApiUrl } from './constants';
+import { mapArticles } from './mapResults';
 import { PROPERTIES } from './parameters';
 
 export class WebzNewsSearch implements INodeType {
@@ -26,7 +26,7 @@ export class WebzNewsSearch implements INodeType {
 		},
 		group: ['transform'],
 		version: 1,
-		description: 'Search global news using Webz.io News Search MCP',
+		description: 'Search global news with the Webz.io News Search API',
 		defaults: {
 			name: 'Webz.io News Search',
 		},
@@ -47,61 +47,52 @@ export class WebzNewsSearch implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 
 		const credentials = await this.getCredentials('webzNewsSearchApi');
-		const mcpUrl = resolveMcpUrl(credentials.mcpUrl, DEFAULT_MCP_URL);
+		const apiUrl = resolveApiUrl(credentials.apiUrl, DEFAULT_API_URL);
 
-		let sessionId: string | undefined;
-		try {
-			sessionId = await openSession(this, mcpUrl);
+		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+			try {
+				const query = this.getNodeParameter('query', itemIndex) as string;
+				const limit = this.getNodeParameter('limit', itemIndex, 10) as number;
+				const simplify = this.getNodeParameter('simplify', itemIndex, true) as boolean;
+				const additionalFilters = this.getNodeParameter('additionalFilters', itemIndex, {}) as IDataObject;
 
-			for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
-				try {
-					const query = this.getNodeParameter('query', itemIndex) as string;
-					const limit = this.getNodeParameter('limit', itemIndex, 10) as number;
-					const simplify = this.getNodeParameter('simplify', itemIndex, true) as boolean;
-					const additionalFilters = this.getNodeParameter('additionalFilters', itemIndex, {}) as IDataObject;
+				const body = buildRequestBody(query, limit, additionalFilters);
+				const response = await searchNews(this, apiUrl, body);
 
-					const args = buildArguments(query, limit, additionalFilters);
-					const text = await callTool(this, mcpUrl, sessionId, PREFERRED_TOOL_NAME, args);
-
-					if (!simplify) {
-						returnData.push({
-							json: { result: text },
-							pairedItem: { item: itemIndex },
-						});
-						continue;
-					}
-
-					const parsed = parseResults(text);
-					if (!parsed) {
-						returnData.push({
-							json: { result: text },
-							pairedItem: { item: itemIndex },
-						});
-						continue;
-					}
-
-					for (const article of parsed) {
-						returnData.push({
-							json: article as unknown as JsonObject,
-							pairedItem: { item: itemIndex },
-						});
-					}
-				} catch (error) {
-					if (this.continueOnFail()) {
-						returnData.push({
-							json: items[itemIndex].json,
-							error,
-							pairedItem: { item: itemIndex },
-						});
-						continue;
-					}
-
-					throw new NodeApiError(this.getNode(), error as JsonObject, { itemIndex });
+				if (!simplify) {
+					returnData.push({
+						json: response,
+						pairedItem: { item: itemIndex },
+					});
+					continue;
 				}
-			}
-		} finally {
-			if (sessionId) {
-				await closeSession(this, mcpUrl, sessionId);
+
+				for (const article of mapArticles(response, query)) {
+					returnData.push({
+						json: article as unknown as JsonObject,
+						pairedItem: { item: itemIndex },
+					});
+				}
+			} catch (error) {
+				if (this.continueOnFail()) {
+					returnData.push({
+						json: items[itemIndex].json,
+						error,
+						pairedItem: { item: itemIndex },
+					});
+					continue;
+				}
+
+				const message = error instanceof Error ? error.message : 'News Search API request failed.';
+				const statusCode = error instanceof WebzApiError ? error.statusCode : undefined;
+				throw new NodeApiError(
+					this.getNode(),
+					{
+						message,
+						...(statusCode ? { statusCode } : {}),
+					},
+					{ itemIndex },
+				);
 			}
 		}
 

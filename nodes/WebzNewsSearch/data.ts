@@ -41,10 +41,3 @@ export const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Newsroom', value: 'newsroom' },
 	{ name: 'Government News', value: 'gov_news' },
 ] as const;
-
-export const SORT_BY_OPTIONS = [
-	{ name: 'Best Score', value: 'best_score' },
-	{ name: 'Similarity', value: 'similarity' },
-	{ name: 'Date (Newest First)', value: 'date_desc' },
-	{ name: 'Date (Oldest First)', value: 'date_asc' },
-] as const;

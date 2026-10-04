@@ -5,13 +5,13 @@ import type {
 	INodeProperties,
 } from 'n8n-workflow';
 
-import { DEFAULT_MCP_URL, MCP_PROTOCOL_VERSION, PACKAGE_NAME, PACKAGE_VERSION } from '../nodes/WebzNewsSearch/constants';
+import { DEFAULT_API_URL } from '../nodes/WebzNewsSearch/constants';
 
 export class WebzNewsSearchApi implements ICredentialType {
 	name = 'webzNewsSearchApi';
 	icon = 'file:../nodes/WebzNewsSearch/webzNewsSearch.svg' as const;
 	displayName = 'Webz.io News Search API';
-	documentationUrl = 'https://docs.webz.io/docs/webz/news-search-api-mcp';
+	documentationUrl = 'https://docs.webz.io/docs/webz/news-search-api';
 
 	properties: INodeProperties[] = [
 		{
@@ -24,11 +24,11 @@ export class WebzNewsSearchApi implements ICredentialType {
 			},
 		},
 		{
-			displayName: 'MCP URL',
-			name: 'mcpUrl',
+			displayName: 'API URL',
+			name: 'apiUrl',
 			type: 'hidden',
-			default: DEFAULT_MCP_URL,
-			description: 'MCP endpoint URL. Change to use a proxy or alternate deployment.',
+			default: DEFAULT_API_URL,
+			description: 'News Search API URL. Change to use a proxy or alternate deployment.',
 		},
 	];
 
@@ -41,28 +41,20 @@ export class WebzNewsSearchApi implements ICredentialType {
 		},
 	};
 
+	// Proves the token with one search. The API has no separate credential endpoint.
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{ ($credentials.mcpUrl || "' + DEFAULT_MCP_URL + '").trim().replace(/[/]+$/, "") }}',
+			baseURL: '={{ ($credentials.apiUrl || "' + DEFAULT_API_URL + '").trim().replace(/[/]+$/, "") }}',
 			url: '',
 			method: 'POST',
 			headers: {
-				Accept: 'application/json, text/event-stream',
+				Accept: 'application/json',
 				'Content-Type': 'application/json',
-				'MCP-Protocol-Version': MCP_PROTOCOL_VERSION,
+				Authorization: '=Bearer {{$credentials.apiToken}}',
 			},
 			body: {
-				jsonrpc: '2.0',
-				id: 1,
-				method: 'initialize',
-				params: {
-					protocolVersion: MCP_PROTOCOL_VERSION,
-					capabilities: {},
-					clientInfo: {
-						name: PACKAGE_NAME,
-						version: PACKAGE_VERSION,
-					},
-				},
+				query: 'n8n',
+				k: 1,
 			},
 		},
 	};
